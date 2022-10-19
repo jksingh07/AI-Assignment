@@ -28,7 +28,7 @@ class create_state:
             duplicate_board.append(replica_values)
         return duplicate_board
         
-# create_first is used to intialise the board with basic parameters
+# create_first is used to intialise the board with Q and _ All values are inserted randomly
     def create_first(self):
         board=[]
         for i in range(int(self.length)):
@@ -44,7 +44,7 @@ class create_state:
         
         return self.value
     
- #calculate_h_value is used to calculate the h value of the function    
+ #calculate_h_value is used to calculate the heuristic value of the Q when we make moves   
     def calculate_h_value(self):
         counter=0
                     
@@ -261,6 +261,7 @@ class board_game:
         
 #       Random-restart without Sideways move.
         print("\n\nRANDOM RESTART\n")
+        
         self.moves = 0
         self.c = 0
         for x in range(int(iterations)):
@@ -269,18 +270,22 @@ class board_game:
         print("WITHOUT SIDEWAYS")
         print("Solving " + str(n_queens) + "-Queens problem using Random-Restart Hill-Climbing search WITHOUT SIDEWAYS move ")
         print("No. of Iterations: ", str(iterations))
+##        print("Rate of Success: ", 100*(self.win/int(iterations)),"%")
+##        print("Rate of Failure: ", 100*(self.lost/int(iterations)), "%")
         print("Average number of random-restarts without sideways move: ", self.c/int(iterations))
         print("Average number of steps required without sideways move: ", self.moves/int(iterations))
         print()
 
 #       Random-restart with Sideways move.
+        
         self.moves = 0
         self.c = 0
         for x in range(int(iterations)):
             self.random_restart(1)
         print("\nWITH SIDEWAYS\n")
         print("Solving " + str(n_queens) + "-Queens problem using Random-Restart Hill-Climbing search WITH SIDEWAYS move ")
-        
+##        print("Rate of Success: ", 100*(self.win/int(iterations)),"%")
+##        print("Rate of Failure: ", 100*(self.lost/int(iterations)), "%")
         print("Average number of random-restarts: ", self.c/int(iterations))
         print("Average number of steps required: ", self.moves/int(iterations))
         print()
