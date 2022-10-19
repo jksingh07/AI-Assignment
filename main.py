@@ -9,7 +9,7 @@ def main():
 
     # BFS APPROACH
     print("Using BFS approach\n")
-    if(mc_problem.solve(solve_method="dfs")):
+    if(mc_problem.solve(solve_method="bfs")):
         mc_problem.solution()
 
     else:
