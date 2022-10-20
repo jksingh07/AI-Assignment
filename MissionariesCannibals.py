@@ -201,3 +201,118 @@ class Missionaries_Cannibals():
         self.solved = solution_found
         return solution_found
 
+class missionaries_cannibals_node:
+  def __init__(self, missionaries, cannibals, boat_position):
+    self.missionaries = missionaries
+    self.cannibals = cannibals
+    self.boat_position = boat_position
+    self.h = (missionaries * missionaries + cannibals * cannibals + 2 * missionaries * cannibals)
+    self.previous_node = None
+
+
+
+ def __eq__(self, node):
+    return node.boat_position == self.boat_position and \
+           node.missionaries == self.missionaries and \
+           node.cannibals == self.cannibals
+
+
+
+ def get_adjacent_nodes(self, m, c, side):
+    adj_nodes = []
+    c = 1
+    while c <= side:
+      n_m = c
+      n_c = 0
+      while n_m >= 0:
+        if self.boat_position == 'L':
+          next_m = self.missionaries - n_m
+          next_c = self.cannibals - n_c
+          if next_m >= 0 and next_c >= 0 and (next_m >= next_c or next_m == 0) and ((m - next_m) >= (c - next_c) or (m - next_m == 0)):
+            adj_nodes.append(missionaries_cannibals_node(next_m, next_c, 'R'))
+        elif self.boat_position == 'R':
+          next_m = self.missionaries + n_m
+          next_c = self.cannibals + n_c
+          if next_m <= m and next_c <= c and (next_m >= next_c or next_m == 0) and ((m - next_m) >= (c - next_c) or (m - next_m == 0)):
+            adj_nodes.add(missionaries_cannibals_node(next_m, next_c, 'L'))
+        n_m -= 1
+        n_c += 1
+      c += 1
+    return adj_nodes
+
+
+
+ def show_path(self):
+    if self.previous_node is not None:
+      self.previous_path.printPath()
+    print("<" + self.missionaries + "," + self.cannibals + "," + self.boat_position + "> ")
+
+
+
+
+class missionaries_cannibals_graph:
+  def __init__(self):
+    self.vertex = []
+    self.open = []
+    self.closed = []
+    self.max_m = 0
+    self.max_c = 0
+    self.boat_side = 0
+
+    def a_star(self, m, c, side):
+        steps = 0
+        self.m = m
+        self.c = c
+        self.boat_side = side
+        self.p_queue_open = PriorityQueue()
+        self.p_queue_closed = set()
+        initial = missionaries_cannibals_node(m, c, 'L')
+        initial.g = 0
+        self.p_queue_open.put((initial.h + initial.g, initial))
+        move_node = None
+        while ( not self.p_queue_open.empty()) and (move_node is None or move_node.missionaries != 0 or move_node.cannibals != 0 or move_node.boat_position != 'R'):
+          steps += 1
+          move_node = self.p_queue_open.get()
+          self.p_queue_closed.add(move_node)
+          adjacent_nodes = move_node.get_adjacent_nodes(m, c, self.boat_side)
+          for adj_node in adjacent_nodes:
+            in_closed_list = False
+            for i in self.p_queue_closed:
+              if adj_node == i:
+                if (move_node.g + 1 < i.g):
+                  i.g = move_node.g + 1
+                  i.previous_node = move_node
+                  self.redirect_parent(i)
+                in_closed_list = True
+                break
+            if (in_closed_list):
+              continue
+            in_open_list = False
+            for j in self.p_queue_open:
+              if (adj_node == j):
+                if (move_node.g + 1 < j.g):
+                  j.g = move_node.g + 1
+                  j.previous_node = move_node
+                in_open_list = True
+                break
+            if (in_open_list):
+              continue
+            adj_node.g = move_node.g + 1
+            adj_node.previous_node = move_node
+            self.p_queue_open.put((adj_node.h + adj_node.g, adj_node))
+
+        print(steps)
+        if move_node.missionaries == 0 and move_node.cannibals == 0 and move_node.boat_position == 'R':
+          print("Path:")
+          move_node.show_path()
+      def redirect_parent(self, node):
+        adjacent_nodes = node.get_adjacent_nodes(self.m, self.c, self.boat_side)
+        for adj_node in adjacent_nodes:
+          for i in self.p_queue_closed:
+            if adj_node == i:
+              if node.g + 1 < i.g:
+                i.g = node.g + 1
+                i.previous_node = node
+                self.redirect_parent(i)
+              break
+
